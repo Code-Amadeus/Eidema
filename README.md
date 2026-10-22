@@ -8,6 +8,8 @@ Eidema is a project for persistent memory and persona continuity in AI applicati
 
 **Design phase.** There is no installable runtime or stable API yet.
 
+The initial technology direction is **Python + SQLite**, with related tables in one device-local database per dataset. The concrete schema and interfaces remain design proposals.
+
 The first version focuses on **memory**. Host applications continue to use their existing persona settings and response models. Relationship modeling, learned interaction habits, and automatic persona evolution are future work.
 
 ## V1 scope
@@ -26,9 +28,10 @@ Remembering a shared event does not imply computing a relationship state. Explic
 
 - [V1 memory responsibilities and boundaries (中文)](docs/design/v1-memory-boundaries.md) — agreed product scope, ownership, lifecycle, acceptance journeys, and open design questions.
 - [Persistent-agent scheduling boundaries (中文)](docs/design/persistent-agent-scheduling.md) — future host-owned scheduling, durable work, and its separation from memory maintenance.
-- [V1 data and runtime proposal (中文)](docs/design/v1-data-runtime-proposal.md) — local Amadeus deployment, logical records, retrieval baseline, background costs, and the Python/Rust tradeoff; recommendations remain provisional.
+- [V1 data and runtime proposal (中文)](docs/design/v1-data-runtime-proposal.md) — local Amadeus deployment, retrieval baseline, background costs, and the reasoning for Python + SQLite.
+- [V1 data model (中文)](docs/design/v1-data-model.md) — proposed fields, related tables, and worked examples for remembering, correcting, and forgetting.
 
-Data structures, storage, retrieval, APIs, and concrete resource budgets remain under discussion. The repository documents intended behavior, not implemented capabilities.
+Table schemas, storage configuration, retrieval, APIs, and concrete resource budgets remain under discussion. The repository documents intended behavior, not implemented capabilities.
 
 ## Direction
 
@@ -48,7 +51,7 @@ Eidema 是一个面向 AI 应用的记忆与人格项目，起源于 Amadeus，�
 
 **第一版先解决记忆。** 人格沿用宿主现有配置；关系状态、互动习惯成长与自动人格演化后置。用户应能跨会话召回、查看、纠正和遗忘记忆，后台形成与整理应具有清楚的范围和成本边界。
 
-已确认的方向见[初版记忆边界设计](docs/design/v1-memory-boundaries.md)。数据结构、存储、检索和预算方案仍在讨论，目前尚未开始运行时实现。
+已确认的方向见[初版记忆边界设计](docs/design/v1-memory-boundaries.md)。初版按 Python + SQLite 推进；具体数据表、检索和预算方案仍在讨论，目前尚未开始运行时实现。
 
-初版先服务本地 Amadeus，并保留其他宿主接入能力。[数据与 runtime 讨论稿](docs/design/v1-data-runtime-proposal.md)记录设计顺序及当前技术建议，尚未冻结语言、表结构或 API。
+初版先服务本地 Amadeus，并保留其他宿主接入能力。[数据与 runtime 讨论稿](docs/design/v1-data-runtime-proposal.md)记录技术方向；[初版数据模型](docs/design/v1-data-model.md)细化同一 SQLite 数据库内各表的字段与关系，表结构和 API 尚未冻结。
 
