@@ -24,12 +24,15 @@ The first implementation milestone will establish the complete explicit-memory l
 
 Remembering a shared event does not imply computing a relationship state. Explicit user preferences can be retained without inferring a personality or relationship change.
 
+Deleting a chat retains explicitly saved memories through independent minimal save receipts. Forgetting is a separate operation. Saving something does not make it a permanent prompt instruction; current persona and persistent settings remain host-owned.
+
 ## Design documents
 
 - [V1 memory responsibilities and boundaries (中文)](docs/design/v1-memory-boundaries.md) — agreed product scope, ownership, lifecycle, acceptance journeys, and open design questions.
 - [Persistent-agent scheduling boundaries (中文)](docs/design/persistent-agent-scheduling.md) — future host-owned scheduling, durable work, and its separation from memory maintenance.
 - [V1 data and runtime proposal (中文)](docs/design/v1-data-runtime-proposal.md) — local Amadeus deployment, retrieval baseline, background costs, and the reasoning for Python + SQLite.
 - [V1 data model (中文)](docs/design/v1-data-model.md) — proposed fields, related tables, and worked examples for remembering, correcting, and forgetting.
+- [V1 retrieval and context proposal (中文)](docs/design/v1-retrieval-context.md) — FTS5 and multilingual vectors, Chinese-to-Japanese retrieval, context selection, and experimental token and latency budgets.
 
 Table schemas, storage configuration, retrieval, APIs, and concrete resource budgets remain under discussion. The repository documents intended behavior, not implemented capabilities.
 
@@ -54,4 +57,6 @@ Eidema 是一个面向 AI 应用的记忆与人格项目，起源于 Amadeus，�
 已确认的方向见[初版记忆边界设计](docs/design/v1-memory-boundaries.md)。初版按 Python + SQLite 推进；具体数据表、检索和预算方案仍在讨论，目前尚未开始运行时实现。
 
 初版先服务本地 Amadeus，并保留其他宿主接入能力。[数据与 runtime 讨论稿](docs/design/v1-data-runtime-proposal.md)记录技术方向；[初版数据模型](docs/design/v1-data-model.md)细化同一 SQLite 数据库内各表的字段与关系，表结构和 API 尚未冻结。
+
+删除聊天保留此前明确保存的记忆，遗忘是独立操作。保存也不等于每轮注入；持续生效的人设与用户设置由宿主管理。[检索与上下文方案](docs/design/v1-retrieval-context.md)说明词法与向量如何结合、哪些内容进入回答，以及如何验证开销。
 
