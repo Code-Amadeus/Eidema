@@ -25,6 +25,7 @@ Remembering a shared event does not imply computing a relationship state. Explic
 ## Design documents
 
 - [V1 memory responsibilities and boundaries (中文)](docs/design/v1-memory-boundaries.md) — agreed product scope, ownership, lifecycle, acceptance journeys, and open design questions.
+- [Persistent-agent scheduling boundaries (中文)](docs/design/persistent-agent-scheduling.md) — future host-owned scheduling, durable work, and its separation from memory maintenance.
 
 Data structures, storage, retrieval, APIs, and concrete resource budgets remain under discussion. The repository documents intended behavior, not implemented capabilities.
 
@@ -33,6 +34,8 @@ Data structures, storage, retrieval, APIs, and concrete resource budgets remain 
 Memory and persona are intended to work together within one project. V1 establishes the source, scope, validity, and retrieval foundations that later persona features can consume.
 
 The host remains responsible for identity, access grants, execution permissions, and authoritative application facts. Model-generated interpretations do not create execution authority.
+
+Amadeus is a persistent agent. A dedicated host scheduling and persistent-runtime component is a future requirement; schedule definitions, triggers, recovery, and work dispatch remain separate from Eidema's memory maintenance.
 
 Eidema will draw on established memory-system designs and reuse suitable infrastructure components while maintaining its own product semantics.
 
