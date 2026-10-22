@@ -33,8 +33,12 @@ Deleting a chat retains explicitly saved memories through independent minimal sa
 - [V1 data and runtime proposal (中文)](docs/design/v1-data-runtime-proposal.md) — local Amadeus deployment, retrieval baseline, background costs, and the reasoning for Python + SQLite.
 - [V1 data model (中文)](docs/design/v1-data-model.md) — proposed fields, related tables, and worked examples for remembering, correcting, and forgetting.
 - [V1 retrieval and context proposal (中文)](docs/design/v1-retrieval-context.md) — FTS5 and multilingual vectors, Chinese-to-Japanese retrieval, context selection, and experimental token and latency budgets.
+- [Benchmark references and coverage gaps (中文)](docs/design/benchmark-references.md) — useful external tasks, metrics, and limits; no evaluation runs or custom benchmark design.
+- [Runtime paths and persona interaction notes (中文)](docs/design/runtime-paths-discussion.md) — proposed hot, warm, and cold responsibilities, including contextual reasoning and temporary salience; still open for discussion.
 
 Table schemas, storage configuration, retrieval, APIs, and concrete resource budgets remain under discussion. The repository documents intended behavior, not implemented capabilities.
+
+The draft is being held for further consideration. Memory selection and injection should account for interaction and persona, alongside factual recall. The three runtime paths are discussion notes, not a finalized architecture or implementation plan.
 
 ## Direction
 
@@ -59,4 +63,6 @@ Eidema 是一个面向 AI 应用的记忆与人格项目，起源于 Amadeus，�
 初版先服务本地 Amadeus，并保留其他宿主接入能力。[数据与 runtime 讨论稿](docs/design/v1-data-runtime-proposal.md)记录技术方向；[初版数据模型](docs/design/v1-data-model.md)细化同一 SQLite 数据库内各表的字段与关系，表结构和 API 尚未冻结。
 
 删除聊天保留此前明确保存的记忆，遗忘是独立操作。保存也不等于每轮注入；持续生效的人设与用户设置由宿主管理。[检索与上下文方案](docs/design/v1-retrieval-context.md)说明词法与向量如何结合、哪些内容进入回答，以及如何验证开销。
+
+当前初稿暂留待进一步思考。[Benchmark 参考](docs/design/benchmark-references.md)记录可借鉴指标与覆盖缺口；[热、温、冷路径讨论](docs/design/runtime-paths-discussion.md)保留记忆与人格共同影响提取、注入和交互的方向，尚不冻结架构。
 
