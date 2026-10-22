@@ -2,46 +2,45 @@
 
 **Memory & Persona Runtime for AI Agents**
 
-Eidema explores how persistent memory, configurable personas, and shared experiences can work together to give AI agents continuity across conversations.
-
-A project by [Code-Amadeus](https://github.com/Code-Amadeus), developed alongside [Amadeus](https://github.com/Code-Amadeus/Amadeus) with reuse in other applications as a design goal.
+Eidema is a project for persistent memory and persona continuity in AI applications. It originates in [Amadeus](https://github.com/Code-Amadeus/Amadeus), with reuse by other host applications as a design goal.
 
 ## Status
 
-**Design phase.** This repository is a project placeholder. There is no installable runtime or stable API yet; the capabilities below describe the intended scope.
+**Design phase.** There is no installable runtime or stable API yet.
 
-## Intended scope
+The first version focuses on **memory**. Host applications continue to use their existing persona settings and response models. Relationship modeling, learned interaction habits, and automatic persona evolution are future work.
 
-- Cross-session recall grounded in identifiable sources.
-- User-controlled preferences and configurable character personas.
-- Shared experiences and relationship continuity, with explicit scope.
-- Background memory formation and consolidation with bounded resource use.
-- User-facing inspection, correction, and forgetting.
-- Integration with different models and host applications.
+## V1 scope
 
-## Design direction
+- Cross-session recall with identifiable sources and explicit access scope.
+- User-directed remembering, inspection, correction, and forgetting.
+- Optional background memory formation and consolidation with bounded costs.
+- Consistent invalidation across memories, summaries, indexes, and in-flight work.
+- Integration with host-owned identity, permissions, and authoritative state.
 
-Memory and persona are designed together, with distinct responsibilities in one project:
+The first implementation milestone will establish the complete explicit-memory lifecycle before adding optional automatic formation.
 
-- **Memory** manages retained experiences, preferences, provenance, retrieval, consolidation, and lifecycle.
-- **Persona** combines user-defined character settings with relevant memories and relationship context to guide expression.
+Remembering a shared event does not imply computing a relationship state. Explicit user preferences can be retained without inferring a personality or relationship change.
 
-The host application remains responsible for identity, access scope, execution permissions, and authoritative application state. Learned interpretations do not create new execution authority.
+## Design documents
 
-The implementation will draw on established memory-system designs and reuse suitable infrastructure libraries. Storage, interfaces, scheduling, and packaging will be decided through concrete use cases and evaluation.
+- [V1 memory responsibilities and boundaries (中文)](docs/design/v1-memory-boundaries.md) — agreed product scope, ownership, lifecycle, acceptance journeys, and open design questions.
 
-## Questions under discussion
+Data structures, storage, retrieval, APIs, and concrete resource budgets remain under discussion. The repository documents intended behavior, not implemented capabilities.
 
-- Which memories are shared across characters, and which belong to a particular relationship or project?
-- Which persona traits remain user-controlled, and which aspects may evolve through experience?
-- What should be remembered automatically, and what should require an explicit user request?
-- How do correction and forgetting propagate through summaries, indexes, and background work?
-- What latency, token, and device-resource budgets should apply?
+## Direction
+
+Memory and persona are intended to work together within one project. V1 establishes the source, scope, validity, and retrieval foundations that later persona features can consume.
+
+The host remains responsible for identity, access grants, execution permissions, and authoritative application facts. Model-generated interpretations do not create execution authority.
+
+Eidema will draw on established memory-system designs and reuse suitable infrastructure components while maintaining its own product semantics.
 
 ## 中文简介
 
-Eidema 是一个面向 AI 应用的记忆与人格模块项目，起源于 Amadeus，并以独立复用为设计目标。
+Eidema 是一个面向 AI 应用的记忆与人格项目，起源于 Amadeus，并以独立复用为设计目标。
 
-我们希望将跨会话记忆、用户自定义人格、共同经历与关系延续一起设计，同时保留清晰的职责边界和可控的运行开销。用户应能查看、纠正和遗忘记忆。
+**第一版先解决记忆。** 人格沿用宿主现有配置；关系状态、互动习惯成长与自动人格演化后置。用户应能跨会话召回、查看、纠正和遗忘记忆，后台形成与整理应具有清楚的范围和成本边界。
 
-项目目前处于设计阶段，本仓库仅作占位，尚未提供可安装实现或稳定接口。
+已确认的方向见[初版记忆边界设计](docs/design/v1-memory-boundaries.md)。数据结构、存储、检索和预算方案仍在讨论，目前尚未开始运行时实现。
+
