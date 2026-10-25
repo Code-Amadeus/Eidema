@@ -24,7 +24,7 @@ The first implementation milestone will establish the complete explicit-memory l
 
 Remembering a shared event does not imply computing a relationship state. Explicit user preferences can be retained without inferring a personality or relationship change.
 
-Deleting a chat retains explicitly saved memories through independent minimal save receipts. Forgetting is a separate operation. Saving something does not make it a permanent prompt instruction; current persona and persistent settings remain host-owned.
+Deleting a chat retains explicitly saved memories through minimal save receipts, authorized by the host and stored atomically with the memory in Eidema. Forgetting is a separate operation. Response preferences can enter as candidates and be reviewed for stable adoption; adoption and per-turn inclusion are separate decisions. Persona definitions and host-executed settings remain host-owned. Memory text never acquires system-level authority.
 
 ## Design documents
 
@@ -39,6 +39,8 @@ Deleting a chat retains explicitly saved memories through independent minimal sa
 Table schemas, storage configuration, retrieval, APIs, and concrete resource budgets remain under discussion. The repository documents intended behavior, not implemented capabilities.
 
 The draft is being held for further consideration. Memory selection and injection should account for interaction and persona, alongside factual recall. The three runtime paths are discussion notes, not a finalized architecture or implementation plan.
+
+The 2026-10-26 review adds host-integration constraints to the existing documents. No implementation milestone, candidate-review schema, or standing-set interface is frozen. A license has not yet been selected; reuse is a design goal, not an assertion that an open-source license has already been granted.
 
 ## Direction
 
@@ -62,7 +64,7 @@ Eidema 是一个面向 AI 应用的记忆与人格项目，起源于 Amadeus，�
 
 初版先服务本地 Amadeus，并保留其他宿主接入能力。[数据与 runtime 讨论稿](docs/design/v1-data-runtime-proposal.md)记录技术方向；[初版数据模型](docs/design/v1-data-model.md)细化同一 SQLite 数据库内各表的字段与关系，表结构和 API 尚未冻结。
 
-删除聊天保留此前明确保存的记忆，遗忘是独立操作。保存也不等于每轮注入；持续生效的人设与用户设置由宿主管理。[检索与上下文方案](docs/design/v1-retrieval-context.md)说明词法与向量如何结合、哪些内容进入回答，以及如何验证开销。
+删除聊天保留此前明确保存的记忆，遗忘是独立操作。保存凭据由 Host 核准，与记忆一起存入 Eidema。回复偏好可先进入候选，经审查后稳定采用；长期采用与每轮注入分别判断。人设定义及 Host 执行的语言、TTS、权限等设置仍由宿主管理。[检索与上下文方案](docs/design/v1-retrieval-context.md)说明候选、采用视图与主模型上下文的关系。
 
 当前初稿暂留待进一步思考。[Benchmark 参考](docs/design/benchmark-references.md)记录可借鉴指标与覆盖缺口；[热、温、冷路径讨论](docs/design/runtime-paths-discussion.md)保留记忆与人格共同影响提取、注入和交互的方向，尚不冻结架构。
 

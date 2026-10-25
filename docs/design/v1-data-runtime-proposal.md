@@ -2,6 +2,8 @@
 
 日期：2026-10-23（Pacific/Auckland）。
 
+接入复核：2026-10-26，针对 Amadeus 9547f39ad518134ce4594f5a52a92c8a61629f45；未修改 Host 代码或运行 Eidema。
+
 状态：讨论稿，尚无实现。已确认的部署目标是“先服务本地 Amadeus，保留其他项目接入能力”，初版按 Python + SQLite 的技术方向推进。具体数据表、并发方式和评测规模仍是提案，不是已冻结的 schema、API 或性能承诺。
 
 产品约束以[初版记忆边界](v1-memory-boundaries.md)为准；Schedule 的职责见[持久 agent 与调度组件](persistent-agent-scheduling.md)。
@@ -38,7 +40,7 @@
 
 词法索引、向量索引和缓存是派生物，不能成为唯一保存事实或唯一执行遗忘的地方。用户的核心人格配置仍在宿主，不复制成另一份可自动改写的记忆。
 
-数据模型现将逻辑分组细化为九张核心表：费用尝试独立于任务详情；依据区分组内共同必要与组间可以替代；合并保留旧写入身份。删除聊天保留显式记忆，因此 Host 还需独立持久保存最小操作凭据，不能只引用可删除的聊天消息。
+数据模型现将逻辑分组细化为九张核心表：费用尝试独立于任务详情；依据区分组内共同必要与组间可以替代；合并保留旧写入身份。删除聊天保留显式记忆，因此 Host 核准的最小操作凭据由 Eidema 同库保存，不能只引用可删除的聊天消息，也不要求为此新增 Host 凭据库。
 
 ### 来源身份与时间
 
@@ -153,3 +155,47 @@ SQLite 每个数据库文件同一时刻只有一个写入者，增加工作线�
 具体可参考的外部任务、指标和覆盖差距见 [Benchmark 参考](benchmark-references.md)。当前只记录参考，不运行评测，也不设计自有 benchmark。
 
 第 2 节已在[初版数据模型](v1-data-model.md)中细化为字段与操作流程；[检索与上下文方案](v1-retrieval-context.md)给出候选流程及实验预算。接下来确认语义并验证方案，再冻结 schema 和查询。当前不开始 runtime 实现。
+
+## 8. Amadeus 接入复核与待收敛契约
+
+下面只记录已经核查的接入事实和设计约束，不把评审建议直接升级成已冻结的 M0／M1 计划。用户提出的候选审查、热温冷关系仍待继续思考；本轮不新增设计文件、测试实现或评测工程。
+
+| 核查事实 | 对接入的要求 |
+| --- | --- |
+| 主对话把最多 60 条 history 放入 frame；当前决策日志以 INFO 写 frame 与模型原始输出 | 遗忘需覆盖之后的模型可见投影；默认日志只保留必要元数据，不能留下正文副本。[prompt 与日志](https://github.com/Code-Amadeus/Amadeus/blob/9547f39ad518134ce4594f5a52a92c8a61629f45/server/cooperative_provider_loop.py#L1126)、[日志隐私工具](https://github.com/Code-Amadeus/Amadeus/blob/9547f39ad518134ce4594f5a52a92c8a61629f45/config/log_privacy.py#L12) |
+| role_reference 在 acceptance_check 之前执行，且异常与主决策共用失败处理 | 可以在投机阶段只读召回；Host 在调用边界隔离记忆超时／错误，保留正常取消语义，不能把可选召回失败升级成整轮失败。[调用顺序](https://github.com/Code-Amadeus/Amadeus/blob/9547f39ad518134ce4594f5a52a92c8a61629f45/server/cooperative_provider_loop.py#L1657) |
+| pending 用户消息在确认后写入；助手在发布后记录，后续还可能中断修订 | 采集使用权威提交边界与稳定修订；记忆操作还需自身授权和幂等，不能仅因已调用一次 append 就假设完成。[用户提交](https://github.com/Code-Amadeus/Amadeus/blob/9547f39ad518134ce4594f5a52a92c8a61629f45/server/cooperative_chat_ingress.py#L331)、[助手记录](https://github.com/Code-Amadeus/Amadeus/blob/9547f39ad518134ce4594f5a52a92c8a61629f45/server/cooperative_delivery.py#L110) |
+| 已有角色人设配置，但未找到通用的对话写入常驻用户要求层 | 回复规则由 Eidema 保存与审查，不把缺失的 Host 设置层当成前提；人设和执行配置继续归 Host。[角色配置](https://github.com/Code-Amadeus/Amadeus/blob/9547f39ad518134ce4594f5a52a92c8a61629f45/core/character_profiles.py#L116) |
+| 主回复语言权威目前是日语／英语；字幕翻译不等于改变回复与 TTS 的语言 | “以后用中文回答”需经过实际设置能力处理，不能保存一条记忆就宣称执行成功。称呼文字与 TTS 读音同样分别处理。[语言权威](https://github.com/Code-Amadeus/Amadeus/blob/9547f39ad518134ce4594f5a52a92c8a61629f45/server/assistant_language.py#L1) |
+| T1 core／T2 voice 不默认包含本地 e5 所需的完整依赖；角色 RAG 在首次引用时才加载 | 先报告真实的 FTS-only 能力；向量作为可选能力，不阻塞第一轮加载或下载。OpenCC、ONNX 也不能因为出现在 local-models extra 中就视为基础安装已有。[安装层级](https://github.com/Code-Amadeus/Amadeus/blob/9547f39ad518134ce4594f5a52a92c8a61629f45/pyproject.toml#L9)、[惰性加载](https://github.com/Code-Amadeus/Amadeus/blob/9547f39ad518134ce4594f5a52a92c8a61629f45/core/character_rag.py#L171) |
+
+会话入口应沿用“角色提议、Host 接受操作”的分工。角色在提交前不能宣告已经保存；界面回执只在持久提交后出现，失败则明确反馈。仅把界面称为权威、却允许语音先说“已保存”，仍会给用户错误确认。若要语音确认，可由 Host 在提交后使用已有表达路径，不必增加一次解释模型调用。
+
+更正和遗忘可以使用本轮已展示的标识，也可以先通过只读解析取得合法目标；Host 校验身份、版本、范围和用户意图。没有展示过的目标不等于必须转去界面，未关联提及也不一律追加确认；有歧义才澄清。检索状态应区分未启用、无命中、部分覆盖和失败，不能让主模型猜测完整性。task_lookup 的失败记录提示了这一风险，但不是记忆场景的实测结果。
+
+### 最小调用关系，尚未冻结为 API
+
+| 交互 | 必须保持的契约 |
+| --- | --- |
+| 接收来源 | 稳定 namespace／record_key／revision；已提交的规范文本与当时语境 |
+| 保存／更正 | 已获准的操作与稳定项键；目标预期版本；保存凭据、内容及依据同事务 |
+| 撤回来源 | 明确目标、原因和本次操作身份；删除聊天不连带删除独立保存凭据，不能只以来源版本三元组代表所有撤回操作 |
+| 解析／提交遗忘 | 解析只读；提交固定目标集并使用稳定 forget_id；下一次 Host 投影同步排除 |
+| 召回／读取已采用规则 | 当前身份、语境、预算、截止时间及实际已展示片段；返回版本、覆盖状态与未提供原因 |
+| 查看／状态 | 可解释当前记忆、采用情况、容量、清理进度及实际 SQLite／索引能力 |
+
+standing(scope) 可以是只读采用视图的接口候选，但不能现在就硬编码为一组字段筛选；适用条件、冷路径审查状态和容量语义尚未收敛。未审查的候选不能自动冒充已生效要求。
+
+上述回复规则归属针对 Amadeus 集成。其他宿主若已有自己的原生用户指令功能，可以保留该权威入口而不用 Eidema 的采用视图；集成时明确唯一写入归属，不能维护两份互相覆盖的要求。
+
+保存凭据同库提交后，仍需验证合并后的键与引用契约，暂不删除 merged。若最早版本承诺跨重启完成遗忘清理，就必须有持久的清理进度；不能只因自动形成后置，就把所有维护状态一并推迟。先界面还是先会话入口、最终表集合及测试合并方式保持待定，不在本轮开始实施。
+
+当前可以独立启动的下一步是 Amadeus 来源基础：消息 id、逐条时间、修订、规范投影、日志隐私和可选召回失败隔离。它们不依赖温路径或冷路径审查的定稿。随后再实现显式记忆的保存／更正／遗忘闭环；本轮只记录顺序，不编写实现。现有 Session 的 timestamp 是保存时间，用户消息尚缺逐条 id 与时间，助手仍存在正文哈希回退，不能把这些基础标为已完成。[当前消息写入](https://github.com/Code-Amadeus/Amadeus/blob/9547f39ad518134ce4594f5a52a92c8a61629f45/core/session_manager.py#L496)
+
+### 环境与发布边界
+
+Python 3.12 的 python.org 常规二进制发布停在 3.12.10，之后进入源码安全更新阶段；这说明应核查实际 SQLite 构建，不说明任何 Python 3.12 环境都无法获得修复版。uv 管理的其他 Python 小版本也不能代替对目标 3.12 构建的检查。[PEP 693](https://peps.python.org/pep-0693/)
+
+单一写入及 checkpoint 所有者、真正只读的检索连接与受维护 SQLite 版本共同构成部署方案。query_only 并不禁止 checkpoint，兼容旧版的条件不能省略；具体见[数据模型 §10](v1-data-model.md#10-sqlite-约束与提交边界)。本轮未运行并发、落盘或断电测试。
+
+Eidema 的许可选择仍需仓库所有者确定，复用目标不等于已授予开源许可；不能从“没有许可证”进一步推导 GitHub 上连查看或 fork 都不允许。[GitHub 许可说明](https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/licensing-a-repository) 本轮不选择许可证，也不对外回复社区提案。
